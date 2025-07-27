@@ -30,6 +30,15 @@ class SnakeGame:
             if random_food not in self.snake_body:
                 return random_food
 
+    def is_collision(self, pt=None):
+        if pt is None:
+            pt = self.snake_body[0]
+        if pt.left < 0 or pt.right > WIDTH or pt.top < HUD_HEIGHT or pt.bottom > HEIGHT:
+            return True
+        if pt in self.snake_body[1:]:
+            return True
+        return False
+
     def reset(self):
         self.games_played += 1
         self.snake_body = []
@@ -88,26 +97,28 @@ class SnakeGame:
                 game_over = True
                 return game_over, self.score, self.reward
 
-        self.screen.fill(BLACK)
-        for i in self.snake_body:
-            pygame.draw.rect(self.screen,GREEN,i)
-        pygame.draw.rect(self.screen,RED,self.food)
+            self.screen.fill(BLACK)
+            for i in self.snake_body:
+                pygame.draw.rect(self.screen,GREEN,i)
+            pygame.draw.rect(self.screen,RED,self.food)
 
-        text_surface = self.font.render(f"Score: {self.score}", True, (255,255,255))
-        text_rect = text_surface.get_rect()
-        text_rect.topleft = (10, 10)
-        self.screen.blit(text_surface, text_rect)
+            text_surface = self.font.render(f"Score: {self.score}", True, (255,255,255))
+            text_rect = text_surface.get_rect()
+            text_rect.topleft = (10, 10)
+            self.screen.blit(text_surface, text_rect)
 
-        games_text_surface = self.font.render(f"Games: {self.games_played}", True, (255, 255, 255))
-        games_text_rect = games_text_surface.get_rect()
-        games_text_rect.topleft = (10, 30)
+            games_text_surface = self.font.render(f"Games: {self.games_played}", True, (255, 255, 255))
+            games_text_rect = games_text_surface.get_rect()
+            games_text_rect.topleft = (10, 30)
 
-        pygame.draw.line(self.screen, (255,255,255), (0,HUD_HEIGHT-2), (WIDTH, HUD_HEIGHT-2), 2)
+            pygame.draw.line(self.screen, (255,255,255), (0,HUD_HEIGHT-2), (WIDTH, HUD_HEIGHT-2), 2)
 
-        self.screen.blit(games_text_surface, games_text_rect)
+            self.screen.blit(games_text_surface, games_text_rect)
 
-        pygame.display.flip()
-        self.clock.tick(FPS)
+            pygame.display.flip()
+            self.clock.tick(FPS)
+
+            return game_over, self.score, self.reward
 
         return game_over, self.score, self.reward
 
