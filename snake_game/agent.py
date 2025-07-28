@@ -16,53 +16,63 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = Linear_QNet(11, 256, 3)
+        self.model = Linear_QNet(19, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
     def get_state(self, game):
+
         head = game.snake_body[0]
+        
+        point_l = (head.x - BLOCK_SIZE, head.y)
+        point_r = (head.x + BLOCK_SIZE, head.y)
+        point_u = (head.x, head.y - BLOCK_SIZE)
+        point_d = (head.x, head.y + BLOCK_SIZE)
+        point_ul = (head.x - BLOCK_SIZE, head.y - BLOCK_SIZE)
+        point_ur = (head.x + BLOCK_SIZE, head.y - BLOCK_SIZE)
+        point_dl = (head.x - BLOCK_SIZE, head.y + BLOCK_SIZE)
+        point_dr = (head.x + BLOCK_SIZE, head.y + BLOCK_SIZE)
 
-        point_l = pygame.Rect(head.x - BLOCK_SIZE, head.y, BLOCK_SIZE, BLOCK_SIZE)
-        point_r = pygame.Rect(head.x + BLOCK_SIZE, head.y, BLOCK_SIZE, BLOCK_SIZE)
-        point_u = pygame.Rect(head.x, head.y - BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-        point_d = pygame.Rect(head.x, head.y + BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE)
-
-        dir_l = game.direction == "LEFT"
-        dir_r = game.direction == "RIGHT"
-        dir_u = game.direction == "UP"
-        dir_d = game.direction == "DOWN"
-
-        food_l = game.food.x < head.x
-        food_r = game.food.x > head.x
-        food_u = game.food.y < head.y
-        food_d = game.food.y > head.y
+        dir_l = game.direction == 'LEFT'
+        dir_r = game.direction == 'RIGHT'
+        dir_u = game.direction == 'UP'
+        dir_d = game.direction == 'DOWN'
 
         state = [
-            (dir_r and game.is_collision(point_r)) or
-            (dir_l and game.is_collision(point_l)) or
-            (dir_u and game.is_collision(point_u)) or
+            (dir_r and game.is_collision(point_r)) or 
+            (dir_l and game.is_collision(point_l)) or 
+            (dir_u and game.is_collision(point_u)) or 
             (dir_d and game.is_collision(point_d)),
 
-            (dir_u and game.is_collision(point_r)) or
-            (dir_d and game.is_collision(point_l)) or
-            (dir_r and game.is_collision(point_d)) or
+            (dir_u and game.is_collision(point_r)) or 
+            (dir_d and game.is_collision(point_l)) or 
+            (dir_r and game.is_collision(point_d)) or 
             (dir_l and game.is_collision(point_u)),
-            
-            (dir_u and game.is_collision(point_l)) or
-            (dir_d and game.is_collision(point_r)) or
-            (dir_r and game.is_collision(point_u)) or
+
+            (dir_d and game.is_collision(point_r)) or 
+            (dir_u and game.is_collision(point_l)) or 
+            (dir_r and game.is_collision(point_u)) or 
             (dir_l and game.is_collision(point_d)),
+            
+            game.is_collision(point_r),
+            game.is_collision(point_l),
+            game.is_collision(point_u),
+            game.is_collision(point_d),
+            game.is_collision(point_ur),
+            game.is_collision(point_ul),
+            game.is_collision(point_dr),
+            game.is_collision(point_dl),
 
             dir_l,
             dir_r,
             dir_u,
             dir_d,
-
-            food_l,
-            food_r,
-            food_u,
-            food_d
+            
+            game.food.x < game.snake_body[0].x,
+            game.food.x > game.snake_body[0].x,
+            game.food.y < game.snake_body[0].y,
+            game.food.y > game.snake_body[0].y
         ]
+
         return torch.tensor(state, dtype=torch.float)
 
     def remember(self, state, action, reward, next_state, done):

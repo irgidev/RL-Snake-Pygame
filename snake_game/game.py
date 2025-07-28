@@ -33,10 +33,13 @@ class SnakeGame:
 
     def is_collision(self, pt=None):
         if pt is None:
-            pt = self.snake_body[0]
-        if pt.left < 0 or pt.right > WIDTH or pt.top < HUD_HEIGHT or pt.bottom > HEIGHT:
+            pt_rect = self.snake_body[0]
+        else:
+            pt_rect = pygame.Rect(pt[0], pt[1], BLOCK_SIZE, BLOCK_SIZE)
+
+        if pt_rect.left < 0 or pt_rect.right > WIDTH or pt_rect.top < HUD_HEIGHT or pt_rect.bottom > HEIGHT:
             return True
-        if pt in self.snake_body[1:]:
+        if pt_rect in self.snake_body[1:]:
             return True
         return False
 

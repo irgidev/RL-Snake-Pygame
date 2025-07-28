@@ -31,17 +31,17 @@ class QTrainer:
         self.criterion = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):
-        if isinstance(state, tuple):
-            state = torch.stack(list(state), dim=0)
-            next_state = torch.stack(list(next_state), dim=0)
-            action = torch.tensor(action, dtype=torch.long)
-            reward = torch.tensor(reward, dtype=torch.float)
-        else:
+        if isinstance(done, bool):
             state = torch.unsqueeze(state, 0)
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.tensor([action], dtype=torch.long)
             reward = torch.tensor([reward], dtype=torch.float)
             done = (done, )
+        else:
+            state = torch.stack(list(state), dim=0)
+            next_state = torch.stack(list(next_state), dim=0)
+            action = torch.tensor(action, dtype=torch.long)
+            reward = torch.tensor(reward, dtype=torch.float)
 
         if len(state.shape) == 1:
             state = torch.unsqueeze(state, 0)
