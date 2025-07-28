@@ -2,7 +2,6 @@
 This project is a complete implementation of the classic Snake game, built from scratch using Python and Pygame. The primary goal is to train an Artificial Intelligence (AI) agent using **Deep Q-Learning (DQN)** to play the game autonomously and achieve the highest possible score.
 
 [![Snake Gameplay](gameplay.gif)](gameplay.gif)
-*(Note: You can click on the image to see the full GIF.)*
 
 ---
 
